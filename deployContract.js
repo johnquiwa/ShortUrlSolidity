@@ -1,6 +1,8 @@
 const fs = require('fs');
 const input = fs.readFileSync('contracts/ShortenUrl.sol', 'utf8');
 
+console.log('Compiling contract...');
+
 const solc = require('solc');
 const output = solc.compile(input, 1);
 const abi = JSON.parse(output.contracts[':ShortenUrl'].interface);

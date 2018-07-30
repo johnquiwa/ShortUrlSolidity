@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const crypto = require('crypto');
 
+console.log('Compiling contract...');
+
 // Read And Compile Solidity Contract
 const fs = require('fs');
 const input = fs.readFileSync('contracts/ShortenUrl.sol', 'utf8');
