@@ -9,3 +9,6 @@ An implementation of a  Short Url service (REST API) using Node, Express, Solidi
 * Have testrpc (ganache / ganache-cli) running
 * Run `node deployContract`
 * Run `node app`
+
+## TODO
+* Implement tests
