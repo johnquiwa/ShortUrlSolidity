@@ -9,7 +9,8 @@
 * Postman to manually test
 
 ## To Run
-* `npm install -g ganache-cli`
+* Install ganache-cli globally - `npm install -g ganache-cli`
+* Install other dependencies in package.json - `npm install`
 * Have testrpc running in one terminal window - `ganache-cli`
 * In another terminal window run - `node deployContract`
 * Run `node app`
