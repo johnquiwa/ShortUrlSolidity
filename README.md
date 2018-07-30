@@ -9,6 +9,7 @@
 * Postman to manually test
 
 ## To Run
+* Make sure you're running the latest version of node - `node -v`
 * Install ganache-cli globally - `npm install -g ganache-cli`
 * Install other dependencies in package.json - `npm install`
 * Have testrpc running in one terminal window - `ganache-cli`
