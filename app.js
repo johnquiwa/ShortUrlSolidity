@@ -36,7 +36,6 @@ const getOwnerAccount = async () => {
 // Checks to see if the key already exists in contract storage
 // If it does, recursively calls itself with random num appended to original Url
 const createShortUrl = async (originalUrl) => {
-  console.log('hey');
   const sha256 = crypto.createHash('sha256');
   const ownerAccount = await getOwnerAccount();
 
