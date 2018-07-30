@@ -22,7 +22,7 @@
 
 ### GET '/:shortenedUrlKey' - (Redirects to corresponding URL)
 * Send a GET request with Shortened Url Key after slash
-* If using the key from the URL from the POST endpoint - http://localhost:3000/`UtFhjsP8`
+* If using the key from the URL from the POST endpoint - `http://localhost:3000/UtFhjsP8`
 
 ## Implementation
 * Hashing an original url via sha256
