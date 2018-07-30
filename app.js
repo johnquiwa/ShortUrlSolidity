@@ -94,8 +94,6 @@ app.post('/', async (req, res) => {
 
   const { shortUrlKey, base64Key } = await createShortUrl(originalUrl);
 
-  console.log('short', shortUrlKey);
-
   // Convert the original url to hex
   // (Solidity Contract is expecting bytes of undetermined length)
   const originalUrlInBytes = `0x${Buffer.from(originalUrl, 'utf8').toString('hex')}`;
