@@ -26,8 +26,8 @@
 
 ## Implementation
 * Hashing an original url via sha256
-* Encoding that hash to base64 and using the first 8 characters as the Shortened Url Key (64^8 = 281,474,976,710,656 possible combinations)
-* 
+* Encoding that hash to base64 and using the first 8 characters as the Shortened Url Key 
+* (64^8 = 281,474,976,710,656 possible combinations)
 
 ## TODO
 * Implement tests
