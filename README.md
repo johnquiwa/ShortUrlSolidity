@@ -9,18 +9,20 @@
 * Postman to manually test
 
 ## To Run
-* `npm install -g ganache-cli`
+* Make sure you're running the latest version of node - `node -v`
+* Install ganache-cli globally - `npm install -g ganache-cli`
+* Install other dependencies in package.json - `npm install`
 * Have testrpc running in one terminal window - `ganache-cli`
 * In another terminal window run - `node deployContract`
 * Run `node app`
 
 ## Endpoints - via `http://localhost:3000`
-### POST '/' - (Returns Shortened Url Key)
+#### POST '/' - (Returns Shortened Url Key)
 * `http://localhost:3000/`
 * Send a JSON payload with a url property (ex. `{ "url": "www.google.com"}`)
 * This will return a url with the Shortened Url Key (ex. `http://localhost:3000/UtFhjsP8`)
 
-### GET '/:shortenedUrlKey' - (Redirects to corresponding URL)
+#### GET '/:shortenedUrlKey' - (Redirects to corresponding URL)
 * Send a GET request with Shortened Url Key after slash
 * If using the key from the URL from the POST endpoint - `http://localhost:3000/UtFhjsP8`
 
@@ -28,6 +30,8 @@
 * Hashing an original url via sha256
 * Encoding that hash to base64 and using the first 8 characters as the Shortened Url Key 
 * (64^8 = 281,474,976,710,656 possible combinations)
+* Use recursive function to generate a new key if it already exists in storage in the contract
+* Store Shortened Url Keys as `bytes8` in solidity contract and original url (undetermined length) as `bytes`
 
 ## TODO
 * Implement tests
