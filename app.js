@@ -88,10 +88,14 @@ app.get('/', (req, res) => {
  */
 app.post('/', async (req, res) => {
   const ownerAccount = await getOwnerAccount();
-  const originalUrl = req.body.url;
+  let originalUrl = req.body.url;
 
   if (!req.body.url) {
     res.status(500).send('ERROR: No url parameter provided');
+  }
+
+  if (!req.body.url.includes('http://') && !req.body.url.includes('https://')) {
+    res.status(500).send('ERROR: Url must begin with https:// or https://');
   }
 
   const { shortUrlKey, base64Key } = await createShortUrl(originalUrl);
@@ -105,7 +109,7 @@ app.post('/', async (req, res) => {
       .createShortenedUrl(shortUrlKey, originalUrlInBytes)
       .send({from: ownerAccount, gas: 1000000});
 
-    res.status(200).send({shortUrlKey: `http://localhost:3000/${base64Key}`});
+    res.status(200).send({shortUrl: `http://localhost:3000/${base64Key}`});
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -117,14 +121,12 @@ app.post('/', async (req, res) => {
  * Endpoint to retrieve the longUrl for a corresponding shortUrl
  * Redirects upon finding match from Solidity Contract
  */
-app.get('/:shortUrl', async (req, res) => {
+app.get('/:shortUrlKey', async (req, res) => {
   const ownerAccount = await getOwnerAccount();
-  const shortUrlKey = `0x${Buffer.from(req.params.shortUrl, 'base64').toString('hex')}`;
-
+  const shortUrlKey = `0x${Buffer.from(req.params.shortUrlKey, 'base64').toString('hex')}`;
   try {
     const longUrl = await ShortenUrlContractInstance.methods.getMatchedUrl(shortUrlKey).call({from: ownerAccount});
     const redirectUrl = Buffer.from(longUrl.slice(2), 'hex').toString('utf8');
-
     res.redirect(redirectUrl);
   } catch(err) {
     res.status(500).send(err);
