@@ -32,6 +32,42 @@ const getOwnerAccount = async () => {
   })
 };
 
+// Returns an object with the base64Key it's corresponding hex
+// Checks to see if the key already exists in contract storage
+// If it does, recursively calls itself with random num appended to original Url
+const createShortUrl = async (originalUrl) => {
+  console.log('hey');
+  const sha256 = crypto.createHash('sha256');
+  const ownerAccount = await getOwnerAccount();
+
+  try {
+    // Hash the original URL
+    // Convert the hash to base64 ([a-z], [A-Z], [0-9], +, /)
+    const hash = sha256.update(originalUrl).digest('base64');
+
+    // This is the  base64 key that corresponds to the given URL
+    const base64Key = hash.slice(0, 8);
+
+    // Convert base64 to hex string
+    // (Solidity Contract is expecting bytes8)
+    let shortUrlKey = `0x${Buffer.from(base64Key, 'base64').toString('hex')}`;
+
+    // Check for collision
+    const longUrl = await ShortenUrlContractInstance.methods.getMatchedUrl(shortUrlKey).call({from: ownerAccount});
+    if (longUrl) {
+      const randomNum = Math.random();
+      return createShortUrl(`${originalUrl}${randomNum}`);
+    }
+
+    return {
+      base64Key,
+      shortUrlKey:`0x${Buffer.from(base64Key, 'base64').toString('hex')}`
+    }
+  } catch(err) {
+    console.error(err);
+  }
+};
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -51,23 +87,15 @@ app.get('/', (req, res) => {
  */
 app.post('/', async (req, res) => {
   const ownerAccount = await getOwnerAccount();
-  const sha256 = crypto.createHash('sha256');
   const originalUrl = req.body.url;
 
   if (!req.body.url) {
     res.status(500).send('ERROR: No url parameter provided');
   }
 
-  // Hash the original URL
-  // Convert the hash to base64 ([a-z], [A-Z], [0-9], +, /)
-  const hash = sha256.update(originalUrl).digest('base64');
+  const { shortUrlKey, base64Key } = await createShortUrl(originalUrl);
 
-  // This is the  base64 key that corresponds to the given URL
-  const base64Key = hash.slice(0, 8);
-
-  // Convert base64 to hex string
-  // (Solidity Contract is expecting bytes8)
-  const shortUrlKey = `0x${Buffer.from(base64Key, 'base64').toString('hex')}`;
+  console.log('short', shortUrlKey);
 
   // Convert the original url to hex
   // (Solidity Contract is expecting bytes of undetermined length)
@@ -80,6 +108,7 @@ app.post('/', async (req, res) => {
 
     res.status(200).send({shortUrlKey: `http://localhost:3000/${base64Key}`});
   } catch (err) {
+    console.log(err);
     res.status(500).send(err);
   }
 });
@@ -91,7 +120,7 @@ app.post('/', async (req, res) => {
  */
 app.get('/:shortUrl', async (req, res) => {
   const ownerAccount = await getOwnerAccount();
-  const shortUrlKey = `0x${Buffer.from(req.params.key, 'base64').toString('hex')}`;
+  const shortUrlKey = `0x${Buffer.from(req.params.shortUrl, 'base64').toString('hex')}`;
 
   try {
     const longUrl = await ShortenUrlContractInstance.methods.getMatchedUrl(shortUrlKey).call({from: ownerAccount});
